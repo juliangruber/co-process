@@ -32,25 +32,21 @@ function each(gen, fn){
     var left = 0;
 
     next();
-
+    
     function next(){
       co(function*(){
-        return yield gen;
-      })(function(err, data){
-        if (err) return done(err);
+        var data = yield gen;
         if (!data && !left) return done();
         if (!data) return;
         
         next();
         left++;
         
-        co(function*(){
-          yield fn(data);
-        })(function(err){
-          if (err) return done(err);
-          if (!--left) done();
-        });
+        yield fn(data);
+        if (!--left) done();
+      })(function(err){
+        if (err) return done(err);
       });
     }
-  }
+  };
 }
