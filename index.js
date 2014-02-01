@@ -70,11 +70,16 @@ function each(gen, fn){
      * Spawn a worker.
      *
      * A worker waits for work on the `queue` channel
-     * and calls `fn` once it got some.
+     * and calls `fn` once it got some. 
      *
-     * A `false` on the `queue` channel signals the worker
-     * to quit after it's done doing its current work,
-     * in which case it tells the supervisor via the `quit` channel.
+     * A `false` on the `queue` channel signals the worker to
+     * quit when it's done doing its current work.
+     *
+     * If the timeout yields before new work is received,
+     * the worker quits to free resources.
+     *
+     * Before quitting it notifies the supervisor via the
+     * `quit`channel.
      *
      * The `running` count is kept up to date for the
      * supervisor to know if it should spawn new workers.
