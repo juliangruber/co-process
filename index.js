@@ -4,6 +4,8 @@
  */
 
 var co = require('co');
+var chan = require('chan');
+var debug = require('debug')('co-each');
 
 /**
  * Expose `each`.
@@ -29,29 +31,45 @@ module.exports = each;
 function each(gen, fn){
   return function(done){
     var data;
-    var left = 0;
-
-    next();
+    var queue = chan();
+    var quit = chan();
+    var workers = [];
+    var running = 0;
     
-    function next(){
-      co(function*(){
-        left++;
-        var data = yield gen;
-        left--;
-
-        if (!data && !left) return done();
-        if (!data) return;
+    // supervise
+    
+    co(function*(){
+      var work;
+      while (work = yield gen) {
+        debug('work: %s', work);
+        if (workers.length == running) spawn();
+        queue(work);
+      }
+      
+      queue(false);
+      while (yield quit) continue;
+    })(done);
+    
+    // work
+    
+    function spawn(){
+      var idx = workers.length;
+      debug('worker %s: spawn', idx);
+      
+      var worker = co(function*(){
+        var work;
+        while (work = yield queue) {
+          running++;
+          debug('worker %s: consume %s', idx, work);
+          yield fn(work);
+          running--;
+        }
         
-        next();
-        
-        left++;
-        yield fn(data);
-        left--;
-        
-        if (!left) done();
-      })(function(err){
-        if (err) return done(err);
+        debug('worker %s: quit', idx);
+        quit(running);
       });
+      worker(done);
+      workers.push(worker);
     }
   };
 }

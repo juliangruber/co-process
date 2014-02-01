@@ -5,7 +5,9 @@
   "repository": "juliangruber/co-each",
   "license": "MIT",
   "dependencies": {
-    "co": "~3.0.2"
+    "co": "~3.0.2",
+    "chan": "~0.3.0",
+    "debug": "~0.7.4"
   },
   "devDependencies": {
     "co-wait": "0.0.0",
