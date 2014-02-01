@@ -7,10 +7,11 @@
   "dependencies": {
     "co": "~3.0.2",
     "chan": "~0.3.0",
-    "debug": "~0.7.4"
+    "debug": "~0.7.4",
+    "co-first": "0.0.1",
+    "co-wait": "0.0.0"
   },
   "devDependencies": {
-    "co-wait": "0.0.0",
     "mocha": "~1.17.1"
   }
 }

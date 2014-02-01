@@ -6,6 +6,8 @@
 var co = require('co');
 var chan = require('chan');
 var debug = require('debug')('co-each');
+var first = require('co-first');
+var wait = require('co-wait');
 
 /**
  * Expose `each`.
@@ -60,7 +62,7 @@ function each(gen, fn){
       workers.forEach(function(){
         queue(false);
       });
-      
+
       while (yield quit) continue;
     })(done);
     
@@ -85,19 +87,33 @@ function each(gen, fn){
       debug('worker %s: spawn', idx);
       
       var worker = co(function*(){
-        var work;
-        while (work = yield queue) {
-          running++;
-          debug('worker %s: consume %s', idx, work);
-          yield fn(work);
-          running--;
+        var res;
+        var timeout;
+        while (res = yield first([queue, timeout = wait(100)])) {
+          if (res.caller == queue) {
+            var work = res.value;
+            if (!work) break;
+            debug('worker %s: consume %s', idx, work);
+            running++;
+            yield fn(work);
+            running--;
+          } else {
+            debug('worker %s: timeout', idx);
+            break;
+          }
         }
         
         debug('worker %s: quit', idx);
         quit(running);
       });
       
-      workers.push(worker(done));
+      worker(function(err){
+        idx = workers.indexOf(worker);
+        workers.splice(idx, 1);
+        if (err) done(err);
+      });
+      
+      workers.push(worker);
     }
   };
 }
