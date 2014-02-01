@@ -69,15 +69,15 @@ describe('each', function(){
       
       function gen(){
         return function(cb){
-          cb(new Error('stop'));
+          cb(new Error('producer'));
         }
       }
     });
     
     it('should catch errors in the consumer', function(done){
       co(function*(){
-        yield each(gen(), function*(data){
-          throw new Error('stop');
+        yield each(gen, function*(data){
+          throw new Error('consumer');
         });
       })(function(err){
         assert(err);
@@ -85,6 +85,7 @@ describe('each', function(){
       });
       
       function* gen(){
+        yield wait(0);
         return Math.random();
       }
     });
