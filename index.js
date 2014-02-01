@@ -46,7 +46,9 @@ function each(gen, fn){
         queue(work);
       }
       
-      queue(false);
+      workers.forEach(function(){
+        queue(false);
+      });
       while (yield quit) continue;
     })(done);
     
@@ -69,6 +71,7 @@ function each(gen, fn){
         quit(running);
       });
       worker(done);
+      
       workers.push(worker);
     }
   };
