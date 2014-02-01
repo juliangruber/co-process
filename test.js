@@ -57,5 +57,37 @@ describe('each', function(){
       }
     });
   });
+  
+  describe('errors', function(){
+    it('should catch errors in the producer', function(done){
+      co(function*(){
+        yield each(gen(), function*(data){});
+      })(function(err){
+        assert(err);
+        done();
+      });
+      
+      function gen(){
+        return function(cb){
+          cb(new Error('stop'));
+        }
+      }
+    });
+    
+    it('should catch errors in the consumer', function(done){
+      co(function*(){
+        yield each(gen(), function*(data){
+          throw new Error('stop');
+        });
+      })(function(err){
+        assert(err);
+        done();
+      });
+      
+      function* gen(){
+        return Math.random();
+      }
+    });
+  })
 });
 
