@@ -1,0 +1,13 @@
+{
+  "name": "co-each",
+  "version": "1.0.0",
+  "description": "",
+  "repository": "juliangruber/co-each",
+  "license": "MIT",
+  "dependencies": {
+    "co": "~3.0.2"
+  },
+  "devDependencies": {
+    "co-wait": "0.0.0"
+  }
+}
