@@ -2,7 +2,8 @@
 test:
 	@node_modules/.bin/mocha \
 		--reporter spec \
-		--harmony
+		--harmony \
+		--bail
 
 example:
 	@node --harmony example
