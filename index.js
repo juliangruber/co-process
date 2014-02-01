@@ -30,13 +30,24 @@ module.exports = each;
 
 function each(gen, fn){
   return function(done){
-    var data;
     var queue = chan();
     var quit = chan();
     var workers = [];
     var running = 0;
     
-    // supervise
+    /**
+     * Supervisor.
+     *
+     * Listens for work on `gen` and pushes it into the `queue`,
+     * for workers to consume. If there's no free worker, the
+     * supervisor spawns one.
+     *
+     * Whenever `gen` yields data it will be read -
+     * there's no backpressure.
+     *
+     * When there's no more work to be done, signals and waits
+     * for the workers to exit.
+     */
     
     co(function*(){
       var work;
@@ -49,10 +60,25 @@ function each(gen, fn){
       workers.forEach(function(){
         queue(false);
       });
+      
       while (yield quit) continue;
     })(done);
     
-    // work
+    /**
+     * Spawn a worker.
+     *
+     * A worker waits for work on the `queue` channel
+     * and calls `fn` once it got some.
+     *
+     * A `false` on the `queue` channel signals the worker
+     * to quit after it's done doing its current work,
+     * in which case it tells the supervisor via the `quit` channel.
+     *
+     * The `running` count is kept up to date for the
+     * supervisor to know if it should spawn new workers.
+     *
+     * @api private
+     */
     
     function spawn(){
       var idx = workers.length;
@@ -70,9 +96,8 @@ function each(gen, fn){
         debug('worker %s: quit', idx);
         quit(running);
       });
-      worker(done);
       
-      workers.push(worker);
+      workers.push(worker(done));
     }
   };
 }
