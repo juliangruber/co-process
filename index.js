@@ -18,6 +18,11 @@ module.exports = each;
 /**
  * Iterate over generators in parallel.
  *
+ * Options:
+ *
+ *   - max: limit maximum concurrency
+ *   - timeout: kill workers after x milliseconds (default: 100)
+ *
  * Example:
  * 
  *   yield each(on(emitter, 'data'), function*(data){
@@ -25,12 +30,21 @@ module.exports = each;
  *   });
  * 
  * @param {Function} gen
+ * @param {Object=} opts
  * @param {Function} fn
  * @return {Function}
  * @api public
  */
 
-function each(gen, fn){
+function each(gen, opts, fn){
+  if (typeof opts == 'function') {
+    fn = opts;
+    opts = {};
+  }
+  
+  var max = opts.max || Infinity;
+  var timeout = opts.timeout || 100;
+  
   return function(done){
     var queue = chan();
     var quit = chan();
@@ -55,7 +69,7 @@ function each(gen, fn){
       var work;
       while (work = yield gen) {
         debug('work: %s', work);
-        if (workers.length == running) spawn();
+        if (workers.length == running && running < max) spawn();
         queue(work);
       }
       
@@ -94,7 +108,7 @@ function each(gen, fn){
       var worker = co(function*(){
         var res;
         var timeout;
-        while (res = yield first([queue, timeout = wait(100)])) {
+        while (res = yield first([queue, timeout = wait(timeout)])) {
           if (res.caller == queue) {
             var work = res.value;
             if (!work) break;
