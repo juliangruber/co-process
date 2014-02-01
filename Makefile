@@ -1,5 +1,10 @@
 
+test:
+	@node_modules/.bin/mocha \
+		--reporter spec \
+		--harmony
+
 example:
 	@node --harmony example
 
-.PHONY: exapmle
+.PHONY: test example

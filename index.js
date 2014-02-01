@@ -35,15 +35,20 @@ function each(gen, fn){
     
     function next(){
       co(function*(){
+        left++;
         var data = yield gen;
+        left--;
+
         if (!data && !left) return done();
         if (!data) return;
         
         next();
-        left++;
         
+        left++;
         yield fn(data);
-        if (!--left) done();
+        left--;
+        
+        if (!left) done();
       })(function(err){
         if (err) return done(err);
       });
