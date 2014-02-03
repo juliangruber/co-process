@@ -1,13 +1,15 @@
 var co = require('co');
-var each = require('./');
+var process = require('./');
 var wait = require('co-wait');
 
 co(function*(){
   
   console.log('start');
   
-  yield each(gen(), function*(data){
-    yield process(data);
+  yield process(gen(), function*(data){
+    console.log('process: %s', data);
+    yield wait(5000);
+    console.log('done: %s', data);
   });
   
   console.log('end');
@@ -20,14 +22,10 @@ var i = 0;
 
 function gen(){
   return function(cb){
+    console.log('gen')
     if (++i == 3) return cb();
     setTimeout(function(){
       cb(null, Math.random());
     }, 1000);
   }
-}
-
-function* process(data){
-  console.log('process: %s', data);
-  yield wait(5000);
 }

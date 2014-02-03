@@ -5,18 +5,18 @@
 
 var co = require('co');
 var chan = require('chan');
-var debug = require('debug')('co-each');
+var debug = require('debug')('co-process');
 var first = require('co-first');
 var wait = require('co-wait');
 
 /**
- * Expose `each`.
+ * Expose `process`.
  */
 
-module.exports = each;
+module.exports = process;
 
 /**
- * Iterate over generators in parallel.
+ * Let `consumer` concurrently process work from `producer`..
  *
  * Options:
  *
@@ -25,20 +25,20 @@ module.exports = each;
  *
  * Example:
  * 
- *   yield each(on(emitter, 'data'), function*(data){
+ *   yield process(on(emitter, 'data'), function*(data){
  *     yield process(data);
  *   });
  * 
- * @param {Function} gen
+ * @param {Function} producer
  * @param {Object=} opts
- * @param {Function} fn
+ * @param {Function} consumer
  * @return {Function}
  * @api public
  */
 
-function each(gen, opts, fn){
+function process(producer, opts, consumer){
   if (typeof opts == 'function') {
-    fn = opts;
+    consumer = opts;
     opts = {};
   }
   
@@ -54,20 +54,20 @@ function each(gen, opts, fn){
     /**
      * Supervisor.
      *
-     * Listens for work on `gen` and pushes it into the `queue`,
+     * Listens for work on `producer` and pushes it into the `queue`,
      * for workers to consume. If there's no free worker, the
      * supervisor spawns one.
      *
-     * Whenever `gen` yields data it will be read -
+     * Whenever `producer` yields data it will be read -
      * there's no backpressure.
      *
      * When there's no more work to be done, signals and waits
-     * for the workers to exit.
+     * for the workers to quit.
      */
     
     co(function*(){
       var work;
-      while (work = yield gen) {
+      while (work = yield producer) {
         debug('work: %s', work);
         if (workers.length == running && running < max) spawn();
         queue(work);
@@ -84,7 +84,7 @@ function each(gen, opts, fn){
      * Spawn a worker.
      *
      * A worker waits for work on the `queue` channel
-     * and calls `fn` once it got some. 
+     * and calls `consumer` once it got some. 
      *
      * A `false` on the `queue` channel signals the worker to
      * quit when it's done doing its current work.
@@ -114,7 +114,7 @@ function each(gen, opts, fn){
             if (!work) break;
             debug('worker %s: consume %s', idx, work);
             running++;
-            yield fn(work);
+            yield consumer(work);
             running--;
           } else {
             debug('worker %s: timeout', idx);

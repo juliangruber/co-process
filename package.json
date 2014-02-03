@@ -1,8 +1,8 @@
 {
-  "name": "co-each",
+  "name": "co-process",
   "version": "1.0.0",
-  "description": "",
-  "repository": "juliangruber/co-each",
+  "description": "Concurrent producer/consumer processing for co",
+  "repository": "juliangruber/co-process",
   "license": "MIT",
   "dependencies": {
     "co": "~3.0.2",
