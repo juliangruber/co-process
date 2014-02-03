@@ -1,9 +1,9 @@
 
 # co-process
 
-  Concurrent producer/consumer processing for [co](https://github.com/visionmedia/co) with optional concurrency control.
+  Concurrent producer/consumer processing for [co](https://github.com/visionmedia/co), with optional concurrency control.
 
-  Also see [co-thread](https://github.com/visionmedia/co-thread) for a more lightweight but buffering implementation.
+  A more complex but not buffering implementation of [co-thread](https://github.com/visionmedia/co-thread).
 
 ## Example
 
@@ -29,8 +29,8 @@ co(function*(){
 
   Options:
   
-    - max: limit maximum concurrency
-    - timeout: kill workers after x milliseconds (default: 100)
+  - max: limit maximum concurrency
+  - timeout: kill workers after x milliseconds (default: 100)
 
 ## Debugging
 
