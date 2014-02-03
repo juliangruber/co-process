@@ -4,6 +4,8 @@
   Concurrent producer/consumer processing for [co](https://github.com/visionmedia/co), with optional concurrency control.
 
   A more complex but not buffering implementation of [co-thread](https://github.com/visionmedia/co-thread).
+  
+  [![build status](https://secure.travis-ci.org/juliangruber/co-process.png)](http://travis-ci.org/juliangruber/co-process)
 
 ## Example
 
