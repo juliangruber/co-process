@@ -5,14 +5,14 @@
   "repository": "juliangruber/co-process",
   "license": "MIT",
   "dependencies": {
-    "co": "~3.0.2",
-    "chan": "~0.3.0",
-    "debug": "~0.7.4",
+    "co": "~4.6.0",
+    "chan": "~0.6.1",
+    "debug": "~3.1.0",
     "co-first": "0.0.1",
     "co-wait": "0.0.0"
   },
   "devDependencies": {
-    "mocha": "~1.17.1"
+    "mocha": "~5.2.0"
   },
   "scripts": {
     "test": "make test"
