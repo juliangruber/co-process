@@ -5,7 +5,7 @@
 
   A more complex but not buffering implementation of [co-thread](https://github.com/visionmedia/co-thread).
   
-  [![build status](https://secure.travis-ci.org/juliangruber/co-process.png)](http://travis-ci.org/juliangruber/co-process)
+  [![build status](https://secure.travis-ci.org/juliangruber/co-process.png)](http://travis-ci.org/juliangruber/co-process) [![Greenkeeper badge](https://badges.greenkeeper.io/juliangruber/co-process.svg)](https://greenkeeper.io/)
 
 ## Example
 
